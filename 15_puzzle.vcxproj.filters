@@ -1,0 +1,60 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Исходные файлы">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Файлы заголовков">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Файлы ресурсов">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Текстуры">
+      <UniqueIdentifier>{29d5318f-9cbb-4d5d-b82a-6f22ca135ba7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Ассеты">
+      <UniqueIdentifier>{4cb2b0bb-2d4b-41f3-b90d-ede269c38044}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Игра">
+      <UniqueIdentifier>{73c1ded5-cc2c-4ba6-8ae5-dff49285d46f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Логика игры">
+      <UniqueIdentifier>{ce34a5b8-c55c-4d87-946f-188aa6a6c5c2}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="textures.cpp">
+      <Filter>Текстуры</Filter>
+    </ClCompile>
+    <ClCompile Include="puzzle.cpp">
+      <Filter>Логика игры</Filter>
+    </ClCompile>
+    <ClCompile Include="tile.cpp">
+      <Filter>Логика игры</Filter>
+    </ClCompile>
+    <ClCompile Include="game.cpp">
+      <Filter>Игра</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="textures.h">
+      <Filter>Текстуры</Filter>
+    </ClInclude>
+    <ClInclude Include="assets.h">
+      <Filter>Ассеты</Filter>
+    </ClInclude>
+    <ClInclude Include="logic.h">
+      <Filter>Логика игры</Filter>
+    </ClInclude>
+    <ClInclude Include="game.h">
+      <Filter>Игра</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
