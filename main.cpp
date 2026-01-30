@@ -15,6 +15,11 @@ int main() {
     // Объект игры
     Game game;
 
+    game.set_size(window);             // Задание размера игрового поля
+    game.set_tile_rects();             // Нарезка тайлмапа
+    game.layout_tiles();               // Масштабирование тайлов
+    game.syncronize_tile_positions();  // Выставление исходных позиций тайлов
+
     // Главный цикл отображения
     while (window.isOpen()) {
         // Обработка событий
@@ -24,8 +29,15 @@ int main() {
                 window.close();
             }
             // Изменение размера окна
-            else if (event->is<sf::Event::Resized>()) {
+            else if (const auto* e = event->getIf<sf::Event::Resized>()) {
+                const float w = static_cast<float>(e->size.x);
+                const float h = static_cast<float>(e->size.y);
+
+                window.setView(sf::View(sf::FloatRect({ 0.f, 0.f }, { w, h })));
+
                 game.set_size(window);
+                game.layout_tiles();
+                game.syncronize_tile_positions();
             }
         }
 

@@ -29,6 +29,10 @@ private:
 
 
 public:
+    // Константы количества строк и столбцов
+    static constexpr int ROWS = 4;
+    static constexpr int COLUMNS = 4;
+
     // Конструктор по умолчанию
     Game();
 
@@ -46,6 +50,15 @@ public:
     
     // Сеттер размера игрового поля
     void set_size(sf::RenderTarget&);
+
+    // Задание тайлам нарезанных участков тайлмапа
+    void set_tile_rects();
+
+    // Масштабирование тайлов
+    void layout_tiles();
+
+    // Расстановка тайлов в начальное состояние
+    void syncronize_tile_positions();
 
 };
 

@@ -1,5 +1,6 @@
 #include "textures.h"
 #include "assets.h"
+#include <SFML/Graphics/Rect.hpp>
 #include <unordered_map>
 #include <stdexcept>
 
@@ -22,21 +23,7 @@ namespace textures {
         };
 
         // Загрузка текстур
-        load("b1", assets::play_button_1);
-        load("b2", assets::play_button_2);
-        load("b3", assets::play_button_3);
-        load("b4", assets::play_button_4);
-        load("b5", assets::play_button_5);
-        load("b6", assets::play_button_6);
-        load("b7", assets::play_button_7);
-        load("b8", assets::play_button_8);
-        load("b9", assets::play_button_9);
-        load("b10", assets::play_button_10);
-        load("b11", assets::play_button_11);
-        load("b12", assets::play_button_12);
-        load("b13", assets::play_button_13);
-        load("b14", assets::play_button_14);
-        load("b15", assets::play_button_15);
+        load("play_tilemap", assets::play_tilemap);
         load("continue", assets::menu_button_continue);
         load("exit", assets::menu_button_exit);
         load("pause", assets::menu_button_pause);
@@ -45,8 +32,31 @@ namespace textures {
     }
 
     // Геттер карты текстур
-    const sf::Texture& get(const std::string key) {
+    const sf::Texture& get(const std::string& key) {
         return loaded.at(key);
+    }
+
+    // Нарезка тайлмапа
+    sf::IntRect tile_rect(const sf::Texture& atlas, int value, int cols, int rows)
+    {
+        // Значение: 1..(cols*rows) или 1..15
+        const auto s = atlas.getSize();
+        const int atlas_w = static_cast<int>(s.x);
+        const int atlas_h = static_cast<int>(s.y);
+
+        // Защита от кривого атласа
+        if (cols <= 0 || rows <= 0) throw std::runtime_error("Bad grid");
+        if (atlas_w % cols != 0 || atlas_h % rows != 0) throw std::runtime_error("Atlas size not divisible by grid");
+        if (value < 1 || value > cols * rows) throw std::runtime_error("Bad tile value");
+
+        const int tile_w = atlas_w / cols;
+        const int tile_h = atlas_h / rows;
+
+        const int idx = value - 1;
+        const int col = idx % cols;
+        const int row = idx / cols;
+
+        return sf::IntRect({ col * tile_w, row * tile_h }, { tile_w, tile_h });
     }
 
 }
