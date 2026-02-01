@@ -7,96 +7,96 @@
 #include "textures.h"
 #include <array>
 
-// Направление перемещения
+// РќР°РїСЂР°РІР»РµРЅРёРµ РїРµСЂРµРјРµС‰РµРЅРёСЏ
 enum class Direction {
-	Up,		// Вверх
-	Down,   // Вниз
-	Left,   // Влево
-	Right,  // Вправо
-	None	// Нет
+	Up,		// Р’РІРµСЂС…
+	Down,   // Р’РЅРёР·
+	Left,   // Р’Р»РµРІРѕ
+	Right,  // Р’РїСЂР°РІРѕ
+	None	// РќРµС‚
 };
 
-// Тайл
+// РўР°Р№Р»
 struct Tile {
-	int value;               // номер тайла (0—15)
-	sf::Sprite sprite;       // спрайт тайла
-	//sf::Vector2f current_px; // текущая позиция (px)
-	//sf::Vector2f start_px;   // старт анимации (px)
-	//sf::Vector2f target_px;  // цель анимации (px)
-	//float elapsed;           // прошло времени (s)
-	//float duration;          // длительность (s)
-	//bool moving;             // флаг перемещения
+	int value;               // РЅРѕРјРµСЂ С‚Р°Р№Р»Р° (0вЂ”15)
+	sf::Sprite sprite;       // СЃРїСЂР°Р№С‚ С‚Р°Р№Р»Р°
+	//sf::Vector2f current_px; // С‚РµРєСѓС‰Р°СЏ РїРѕР·РёС†РёСЏ (px)
+	//sf::Vector2f start_px;   // СЃС‚Р°СЂС‚ Р°РЅРёРјР°С†РёРё (px)
+	//sf::Vector2f target_px;  // С†РµР»СЊ Р°РЅРёРјР°С†РёРё (px)
+	//float elapsed;           // РїСЂРѕС€Р»Рѕ РІСЂРµРјРµРЅРё (s)
+	//float duration;          // РґР»РёС‚РµР»СЊРЅРѕСЃС‚СЊ (s)
+	//bool moving;             // С„Р»Р°Рі РїРµСЂРµРјРµС‰РµРЅРёСЏ
 
-	// Конструктор по умолчанию
+	// РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ
 	Tile() = delete;
 
-	//// Конструктор преобразования малый
+	//// РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёСЏ РјР°Р»С‹Р№
 	//Tile(int, sf::Sprite);
 
-	//// Конструктор преобразования средний
+	//// РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёСЏ СЃСЂРµРґРЅРёР№
 	//Tile(int, sf::Sprite, sf::Vector2f);
 
-	//// Конструктор преобразования большой
+	//// РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёСЏ Р±РѕР»СЊС€РѕР№
 	//Tile(int, sf::Sprite, sf::Vector2f, sf::Vector2f, sf::Vector2f);
 
-	// Конструктор с параметрами
+	// РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ СЃ РїР°СЂР°РјРµС‚СЂР°РјРё
 	Tile(int, sf::Sprite); //sf::Vector2f, sf::Vector2f, sf::Vector2f, float, float, bool*/
 
-	// Конструктор копирования
+	// РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ РєРѕРїРёСЂРѕРІР°РЅРёСЏ
 	Tile(const Tile&) = default;
 	Tile& operator=(const Tile&) = default;
 
-	// Конструктор перемещения
+	// РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ РїРµСЂРµРјРµС‰РµРЅРёСЏ
 	Tile(Tile&& other) noexcept;
 	Tile& operator=(Tile&&) noexcept = default;
 
-	// Деструктор
+	// Р”РµСЃС‚СЂСѓРєС‚РѕСЂ
 	~Tile() = default;
 };
 
-// Игровое поле
+// РРіСЂРѕРІРѕРµ РїРѕР»Рµ
 class Puzzle {
 private:
-	std::array<std::pair<int, int>, 16> pos;
+	std::array<sf::Vector2i, 16> pos;
 
 public:
 
-	// Константа собранного состояния
-	static const std::array<std::pair<int, int>, 16> SOLVED_POS;
+	// РљРѕРЅСЃС‚Р°РЅС‚Р° СЃРѕР±СЂР°РЅРЅРѕРіРѕ СЃРѕСЃС‚РѕСЏРЅРёСЏ
+	static const std::array<sf::Vector2i, 16> SOLVED_POS;
 
-	// Конструктор по умолчанию
+	// РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ
 	Puzzle();
 
-	// Конструктор с параметрами
-	Puzzle(std::array<std::pair<int, int>, 16>);
+	// РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ СЃ РїР°СЂР°РјРµС‚СЂР°РјРё
+	Puzzle(std::array<sf::Vector2i, 16>);
 
-	// Конструктор копирования
+	// РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ РєРѕРїРёСЂРѕРІР°РЅРёСЏ
 	Puzzle(const Puzzle&) = default;
 	Puzzle& operator=(const Puzzle&) = default;
 
-	// Конструктор перемещения
+	// РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ РїРµСЂРµРјРµС‰РµРЅРёСЏ
 	Puzzle(Puzzle&& other) noexcept;
 	Puzzle& operator=(Puzzle&&) noexcept = default;
 
-	// Деструктор
+	// Р”РµСЃС‚СЂСѓРєС‚РѕСЂ
 	~Puzzle() = default;
 
-	// Геттер поля
-	std::array<std::pair<int, int>, 16> get_pos() const;
+	// Р“РµС‚С‚РµСЂ РїРѕР»СЏ
+	std::array<sf::Vector2i, 16> get_pos() const;
 
-	// Проверка возможности перемещения тайла
+	// РџСЂРѕРІРµСЂРєР° РІРѕР·РјРѕР¶РЅРѕСЃС‚Рё РїРµСЂРµРјРµС‰РµРЅРёСЏ С‚Р°Р№Р»Р°
 	bool can_move(int) const;
 
-	// Получение направления перемещения
+	// РџРѕР»СѓС‡РµРЅРёРµ РЅР°РїСЂР°РІР»РµРЅРёСЏ РїРµСЂРµРјРµС‰РµРЅРёСЏ
 	Direction get_direction(int) const;
 
-	// Перемещение
+	// РџРµСЂРµРјРµС‰РµРЅРёРµ
 	void move(int);
 
-	// Возврат решённого состояния
-	static std::array<std::pair<int, int>, 16> get_solved();
+	// Р’РѕР·РІСЂР°С‚ СЂРµС€С‘РЅРЅРѕРіРѕ СЃРѕСЃС‚РѕСЏРЅРёСЏ
+	static std::array<sf::Vector2i, 16> get_solved();
 
-	// Проверка решения головоломки
+	// РџСЂРѕРІРµСЂРєР° СЂРµС€РµРЅРёСЏ РіРѕР»РѕРІРѕР»РѕРјРєРё
 	bool is_solved() const;
 };
 

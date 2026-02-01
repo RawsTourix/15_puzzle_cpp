@@ -5,13 +5,13 @@
 
 namespace assets {
 
-    // Корневая папка
+    // РљРѕСЂРЅРµРІР°СЏ РїР°РїРєР°
     constexpr const char* root = "Sprites/";
 
-    // Спрайты игровых кнопок
+    // РЎРїСЂР°Р№С‚С‹ РёРіСЂРѕРІС‹С… РєРЅРѕРїРѕРє
     constexpr const char* play_tilemap = "Sprites/play_buttons/tilemap.png";
 
-    // Спрайты кнопок меню
+    // РЎРїСЂР°Р№С‚С‹ РєРЅРѕРїРѕРє РјРµРЅСЋ
     constexpr const char* menu_button_continue = "Sprites/menu_buttons/continue.png";
     constexpr const char* menu_button_exit = "Sprites/menu_buttons/exit.png";
     constexpr const char* menu_button_pause = "Sprites/menu_buttons/pause.png";

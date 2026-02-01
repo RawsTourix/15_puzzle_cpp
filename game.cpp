@@ -8,31 +8,31 @@
 #include <algorithm>
 #include <iostream>
 
-// Конструктор по умолчанию
+// РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ
 MovingTile::MovingTile()
-	: MovingTile(0, std::pair<int, int>{}, std::pair<int, int>{}, 0.f, Game::DURATION) {
+	: MovingTile(0, sf::Vector2i{}, sf::Vector2i{}, 0.f, Game::DURATION) {
 }
 
-// Конструктор с параметрами
-MovingTile::MovingTile(int value, std::pair<int, int> from_idx, std::pair<int, int> to_idx, float time, float duration)
+// РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ СЃ РїР°СЂР°РјРµС‚СЂР°РјРё
+MovingTile::MovingTile(int value, sf::Vector2i from_pos, sf::Vector2i to_pos, float time, float duration)
 	: value(value),
-	from_idx(from_idx),
-	to_idx(to_idx),
+	from_pos(from_pos),
+	to_pos(to_pos),
 	time(time),
 	duration(duration) {
 }
 
-// Задание значений
-void MovingTile::start_moving(int value, std::pair<int, int> from_idx, std::pair<int, int> to_idx, float time, float duration) {
-	*this = { value, from_idx, to_idx, time, duration };
+// Р—Р°РґР°РЅРёРµ Р·РЅР°С‡РµРЅРёР№
+void MovingTile::start_moving(int value, sf::Vector2i from_pos, sf::Vector2i to_pos, float time, float duration) {
+	*this = { value, from_pos, to_pos, time, duration };
 }
 
-// Обнуление
+// РћР±РЅСѓР»РµРЅРёРµ
 void MovingTile::stop_moving() {
 	*this = {};
 }
 
-// Конструктор по умолчанию
+// РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ
 Game::Game()
 	: Game(
 		State::Play,
@@ -59,7 +59,7 @@ Game::Game()
 	) {
 }
 
-// Конструктор с параметрами
+// РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ СЃ РїР°СЂР°РјРµС‚СЂР°РјРё
 Game::Game(State state, Puzzle puzzle, std::array<Tile, 15> tiles, float timer, bool timer_running)
 	: state(state),
 	puzzle(puzzle),
@@ -68,22 +68,22 @@ Game::Game(State state, Puzzle puzzle, std::array<Tile, 15> tiles, float timer, 
 	timer_running(timer_running) {
 }
 
-// Отрисовка тайлов
+// РћС‚СЂРёСЃРѕРІРєР° С‚Р°Р№Р»РѕРІ
 void Game::draw(sf::RenderTarget& target) const {
 	for (auto& tile : tiles) target.draw(tile.sprite);
 }
 
-// Геттер размера игрового поля
+// Р“РµС‚С‚РµСЂ СЂР°Р·РјРµСЂР° РёРіСЂРѕРІРѕРіРѕ РїРѕР»СЏ
 sf::Vector2f Game::get_size() const {
 	return size;
 }
 
-// Сеттер размера игрового поля
+// РЎРµС‚С‚РµСЂ СЂР°Р·РјРµСЂР° РёРіСЂРѕРІРѕРіРѕ РїРѕР»СЏ
 void Game::set_size(sf::RenderTarget& target) {
 	size = target.getView().getSize();
 }
 
-// Задание тайлам нарезанных участков тайлмапа
+// Р—Р°РґР°РЅРёРµ С‚Р°Р№Р»Р°Рј РЅР°СЂРµР·Р°РЅРЅС‹С… СѓС‡Р°СЃС‚РєРѕРІ С‚Р°Р№Р»РјР°РїР°
 void Game::set_tile_rects() {
 	for (auto& tile : tiles) {
 		const auto& atlas = textures::get("play_tilemap");
@@ -91,13 +91,22 @@ void Game::set_tile_rects() {
 	}
 }
 
-// Масштабирование тайлов
+// РџРѕР»СѓС‡РµРЅРёРµ РІРµРєС‚РѕСЂР° РЅР°РїСЂР°РІР»РµРЅРёСЏ
+sf::Vector2i Game::vector_direction(Direction dir) {
+	if (dir == Direction::Up) return sf::Vector2i{ -1, 0 };
+	else if (dir == Direction::Down) return sf::Vector2i{ 1, 0 };
+	else if (dir == Direction::Left) return sf::Vector2i{ 0, -1 };
+	else if (dir == Direction::Right) return sf::Vector2i{ 0, 1 };
+	else return sf::Vector2i{};
+}
+
+// РњР°СЃС€С‚Р°Р±РёСЂРѕРІР°РЅРёРµ С‚Р°Р№Р»РѕРІ
 void Game::layout_tiles() {
-	// Расчёт размера клетки и левого верхнего угла
+	// Р Р°СЃС‡С‘С‚ СЂР°Р·РјРµСЂР° РєР»РµС‚РєРё Рё Р»РµРІРѕРіРѕ РІРµСЂС…РЅРµРіРѕ СѓРіР»Р°
 	cell = std::min(size.x / COLUMNS, size.y / ROWS);
 	origin = { (size.x - COLUMNS * cell) / 2, (size.y - ROWS * cell) / 2 };
 
-	// Подгонка тайлов по размеру
+	// РџРѕРґРіРѕРЅРєР° С‚Р°Р№Р»РѕРІ РїРѕ СЂР°Р·РјРµСЂСѓ
 	for (auto& tile : tiles) {
 		sf::IntRect rect = tile.sprite.getTextureRect();
 		float sx = cell / static_cast<float>(rect.size.x);
@@ -107,81 +116,73 @@ void Game::layout_tiles() {
 	}
 }
 
-// Выставление позиций тайлов
+// Р’С‹СЃС‚Р°РІР»РµРЅРёРµ РїРѕР·РёС†РёР№ С‚Р°Р№Р»РѕРІ
 void Game::syncronize_tile_positions() {
-	// Получение логических позиций тайлов
-	const auto pos = puzzle.get_pos();
-
 	for (auto& tile : tiles) {
-		// Если текущий тайл не перемещается
+		// Р•СЃР»Рё С‚РµРєСѓС‰РёР№ С‚Р°Р№Р» РЅРµ РїРµСЂРµРјРµС‰Р°РµС‚СЃСЏ
 		if (tile.value != moving_tile.value) {
 			int value = tile.value;
-			int row = pos.at(value).first;
-			int col = pos.at(value).second;
+			sf::Vector2i pos = puzzle.get_pos().at(value);
 
-			tile.sprite.setPosition({ origin.x + col * cell, origin.y + row * cell });
+			tile.sprite.setPosition(origin + static_cast<sf::Vector2f>(pos) * cell);
 		}
 	}
 }
 
-// Обработка клика
+// РћР±СЂР°Р±РѕС‚РєР° РєР»РёРєР°
 void Game::handle_click(sf::Vector2f pos) {
 
-	// Не перемещение,не перемешивание, и не пауза
+	// РќРµ РїРµСЂРµРјРµС‰РµРЅРёРµ,РЅРµ РїРµСЂРµРјРµС€РёРІР°РЅРёРµ, Рё РЅРµ РїР°СѓР·Р°
 	if (state != State::Move && state != State::Shuffle && state != State::Pause) {
 
-		// Проверка попадания клика на тайл
+		// РџСЂРѕРІРµСЂРєР° РїРѕРїР°РґР°РЅРёСЏ РєР»РёРєР° РЅР° С‚Р°Р№Р»
 		auto it = std::find_if(tiles.begin(), tiles.end(), [pos](const Tile& tile) {
 			return tile.sprite.getGlobalBounds().contains(pos);
 		});
 
-		// Если попал
+		// Р•СЃР»Рё РїРѕРїР°Р»
 		if (it != tiles.end()) {
 			Tile& tile = *it;
 			int value = tile.value;
 			std::cout << "Tile value: " << value << std::endl;
 
-			// Если пазл собран
+			// Р•СЃР»Рё РїР°Р·Р» СЃРѕР±СЂР°РЅ
 			if (state == State::Solved) {
-				// Сброс таймера
+				// РЎР±СЂРѕСЃ С‚Р°Р№РјРµСЂР°
 				timer = 0.f;
 
-				// Перемешивание
+				// РџРµСЂРµРјРµС€РёРІР°РЅРёРµ
 				state = State::Shuffle;
 				std::cout << "Shuffle." << std::endl;
 			}
 
-			// Если готов
+			// Р•СЃР»Рё РіРѕС‚РѕРІ
 			else if (state == State::Ready) {
-				//Запуск таймера
+				//Р—Р°РїСѓСЃРє С‚Р°Р№РјРµСЂР°
 				timer_running = true;
 
-				// Игра
+				// РРіСЂР°
 				state = State::Play;
 				std::cout << "Play!" << std::endl;
 			}
 
-			// Если игра идёт
+			// Р•СЃР»Рё РёРіСЂР° РёРґС‘С‚
 			if (state == State::Play) {
-				// Получение направления перемещения
+				// РџРѕР»СѓС‡РµРЅРёРµ РЅР°РїСЂР°РІР»РµРЅРёСЏ РїРµСЂРµРјРµС‰РµРЅРёСЏ
 				Direction dir = puzzle.get_direction(value);
 
-				// Если тайл можно переместить
+				// Р•СЃР»Рё С‚Р°Р№Р» РјРѕР¶РЅРѕ РїРµСЂРµРјРµСЃС‚РёС‚СЊ
 				if (puzzle.can_move(value) && dir != Direction::None) {
-					// Получение текущей позиции тайла
-					std::pair<int, int> from_idx = puzzle.get_pos().at(value);
+					// РџРѕР»СѓС‡РµРЅРёРµ С‚РµРєСѓС‰РµР№ РїРѕР·РёС†РёРё С‚Р°Р№Р»Р°
+					sf::Vector2i from_pos = puzzle.get_pos().at(value);
 
-					// Вычисление точки перемещения
-					std::pair<int, int> to_idx;
-					if (dir == Direction::Up) to_idx = std::pair<int, int>{ from_idx.first - 1, from_idx.second };
-					if (dir == Direction::Down) to_idx = std::pair<int, int>{ from_idx.first + 1, from_idx.second };
-					if (dir == Direction::Left) to_idx = std::pair<int, int>{ from_idx.first, from_idx.second - 1 };
-					if (dir == Direction::Right) to_idx = std::pair<int, int>{ from_idx.first, from_idx.second + 1 };
+					// Р’С‹С‡РёСЃР»РµРЅРёРµ С‚РѕС‡РєРё РїРµСЂРµРјРµС‰РµРЅРёСЏ
+					sf::Vector2i to_pos = from_pos + vector_direction(dir);
 
-					// Запуск перемещения
-					moving_tile.start_moving(value, from_idx, to_idx, 0, DURATION);
+					// Р—Р°РїСѓСЃРє РїРµСЂРµРјРµС‰РµРЅРёСЏ
+					moving_tile.start_moving(value, from_pos, to_pos, 0, DURATION);
 					
-					// Перемещение
+					// РџРµСЂРµРјРµС‰РµРЅРёРµ
 					state = State::Move;
 					std::cout << "Move tile." << std::endl;
 				}
@@ -191,83 +192,81 @@ void Game::handle_click(sf::Vector2f pos) {
 			std::cout << "Empty tile" << std::endl;
 		}
 	}
-	// Перемешивание
+	// РџРµСЂРµРјРµС€РёРІР°РЅРёРµ
 	else if (state == State::Shuffle) {
-		/* перемешивание */
+		/* РїРµСЂРµРјРµС€РёРІР°РЅРёРµ */
 
-		// Готовность
+		// Р“РѕС‚РѕРІРЅРѕСЃС‚СЊ
 		state = State::Ready;
 		std::cout << "Ready!" << std::endl;
 	}
 
 }
 
-// Обновление процессов, связанных с временем
+// РћР±РЅРѕРІР»РµРЅРёРµ РїСЂРѕС†РµСЃСЃРѕРІ, СЃРІСЏР·Р°РЅРЅС‹С… СЃ РІСЂРµРјРµРЅРµРј
 void Game::update(float dt) {
-	// Обновление игрового таймера
+	// РћР±РЅРѕРІР»РµРЅРёРµ РёРіСЂРѕРІРѕРіРѕ С‚Р°Р№РјРµСЂР°
 	if (timer_running) timer += dt;
 
-	// Обновление анимации
+	// РћР±РЅРѕРІР»РµРЅРёРµ Р°РЅРёРјР°С†РёРё
 	if (moving_tile.value != 0) {
 		moving_tile.time += dt;
 		float t = std::clamp(moving_tile.time / moving_tile.duration, 0.f, 1.f);
 		t = t * t * (3 - 2 * t); // (smoothstep)
 
-		// Получение итератора на тайл по значению
+		// РџРѕР»СѓС‡РµРЅРёРµ РёС‚РµСЂР°С‚РѕСЂР° РЅР° С‚Р°Р№Р» РїРѕ Р·РЅР°С‡РµРЅРёСЋ
 		int value = moving_tile.value;
 		auto it = std::find_if(tiles.begin(), tiles.end(), [value](const Tile& tile) {
 			return value == tile.value;
 		});
 		
-		// Если итератор указывает не на конец
+		// Р•СЃР»Рё РёС‚РµСЂР°С‚РѕСЂ СѓРєР°Р·С‹РІР°РµС‚ РЅРµ РЅР° РєРѕРЅРµС†
 		if (it != tiles.end()) {
-			// Получение ссылки на спрайт
+			// РџРѕР»СѓС‡РµРЅРёРµ СЃСЃС‹Р»РєРё РЅР° СЃРїСЂР°Р№С‚
 			sf::Sprite& sprite = it->sprite;
 
-			// Вычисление логических позиций
-			int from_row = moving_tile.from_idx.first;
-			int from_col = moving_tile.from_idx.second;
-			int to_row = moving_tile.to_idx.first;
-			int to_col = moving_tile.to_idx.second;
+			// Р’С‹С‡РёСЃР»РµРЅРёРµ Р»РѕРіРёС‡РµСЃРєРёС… РїРѕР·РёС†РёР№
+			sf::Vector2i from_pos = moving_tile.from_pos;
+			sf::Vector2i to_pos = moving_tile.to_pos;
 
-			// Вычисление конечной позиции
-			sf::Vector2f target_px = { origin.x + to_col * cell, origin.y + to_row * cell };
-			
-			// Если анимация ещё идёт
+			// Р’С‹С‡РёСЃР»РµРЅРёРµ РєРѕРЅРµС‡РЅРѕР№ РїРѕР·РёС†РёРё
+			sf::Vector2f target_px = origin + static_cast<sf::Vector2f>(to_pos) * cell;
+
+			// Р•СЃР»Рё Р°РЅРёРјР°С†РёСЏ РµС‰С‘ РёРґС‘С‚
 			if (t < 1) {
 
-				// Вычисление начальной позиции
-				sf::Vector2f start_px = { origin.x + from_col * cell, origin.y + from_row * cell };
+				// Р’С‹С‡РёСЃР»РµРЅРёРµ РЅР°С‡Р°Р»СЊРЅРѕР№ РїРѕР·РёС†РёРё
+				sf::Vector2f start_px = origin + static_cast<sf::Vector2f>(from_pos) * cell;
 
-				// Вычисление текущей позиции перемещения
+				// Р’С‹С‡РёСЃР»РµРЅРёРµ С‚РµРєСѓС‰РµР№ РїРѕР·РёС†РёРё РїРµСЂРµРјРµС‰РµРЅРёСЏ
 				sf::Vector2f pos = start_px + (target_px - start_px) * t;
 
 				sprite.setPosition(pos);
 			}
-			// Если анимация закончилась
+			// Р•СЃР»Рё Р°РЅРёРјР°С†РёСЏ Р·Р°РєРѕРЅС‡РёР»Р°СЃСЊ
 			else {
-				// Установка конечной позиции
+				// РЈСЃС‚Р°РЅРѕРІРєР° РєРѕРЅРµС‡РЅРѕР№ РїРѕР·РёС†РёРё
 				sprite.setPosition(target_px);
 
-				// Логическое перемещение тайла
+				// Р›РѕРіРёС‡РµСЃРєРѕРµ РїРµСЂРµРјРµС‰РµРЅРёРµ С‚Р°Р№Р»Р°
 				puzzle.move(moving_tile.value);
 
-				// Остановка перемещаемого тайла
+				// РћСЃС‚Р°РЅРѕРІРєР° РїРµСЂРµРјРµС‰Р°РµРјРѕРіРѕ С‚Р°Р№Р»Р°
 				moving_tile.stop_moving();
 				
-				// Если головоломка собрана
+				// Р•СЃР»Рё РіРѕР»РѕРІРѕР»РѕРјРєР° СЃРѕР±СЂР°РЅР°
 				if (puzzle.is_solved()) {
-					// Выключение таймера
+					// Р’С‹РєР»СЋС‡РµРЅРёРµ С‚Р°Р№РјРµСЂР°
 					timer_running = false;
 
-					// Собрана
+					// РЎРѕР±СЂР°РЅР°
 					state = State::Solved;
 
-					/* поздравление */
+					/* РїРѕР·РґСЂР°РІР»РµРЅРёРµ */
 					std::cout << "Solved!!!" << std::endl;
 				}
 				else {
-					// Игра
+					// РРіСЂР°
 					state = State::Play;
 					std::cout << "Continue playing..." << std::endl;
 				}

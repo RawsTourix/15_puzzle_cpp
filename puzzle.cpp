@@ -4,67 +4,67 @@
 #include <cmath>
 #include <utility>
 
-// Константа собранного состояния
-const std::array<std::pair<int, int>, 16> Puzzle::SOLVED_POS = Puzzle::get_solved();
+// РљРѕРЅСЃС‚Р°РЅС‚Р° СЃРѕР±СЂР°РЅРЅРѕРіРѕ СЃРѕСЃС‚РѕСЏРЅРёСЏ
+const std::array<sf::Vector2i, 16> Puzzle::SOLVED_POS = Puzzle::get_solved();
 
-// Конструктор по умолчанию
+// РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ
 Puzzle::Puzzle()
 	: pos(SOLVED_POS) {
 }
 
-// Конструктор с параметрами
-Puzzle::Puzzle(std::array<std::pair<int, int>, 16> pos)
+// РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ СЃ РїР°СЂР°РјРµС‚СЂР°РјРё
+Puzzle::Puzzle(std::array<sf::Vector2i, 16> pos)
 	: pos(std::move(pos)) {
 }
 
-// Конструктор перемещения
+// РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ РїРµСЂРµРјРµС‰РµРЅРёСЏ
 Puzzle::Puzzle(Puzzle&& other) noexcept
 	: pos(std::move(other.pos)) {
 }
 
-// Геттер поля
-std::array<std::pair<int, int>, 16> Puzzle::get_pos() const {
+// Р“РµС‚С‚РµСЂ РїРѕР»СЏ
+std::array<sf::Vector2i, 16> Puzzle::get_pos() const {
 	return pos;
 }
 
-// Проверка возможности перемещения тайла
+// РџСЂРѕРІРµСЂРєР° РІРѕР·РјРѕР¶РЅРѕСЃС‚Рё РїРµСЂРµРјРµС‰РµРЅРёСЏ С‚Р°Р№Р»Р°
 bool Puzzle::can_move(int n) const {
 	if (n > 0 && n < 16)
-		return (std::abs(pos[n].first - pos[0].first) + abs(pos[n].second - pos[0].second) == 1);
+		return (std::abs(pos[n].x - pos[0].x) + abs(pos[n].y - pos[0].y) == 1);
 	return false;
 }
 
-// Получение направления перемещения
+// РџРѕР»СѓС‡РµРЅРёРµ РЅР°РїСЂР°РІР»РµРЅРёСЏ РїРµСЂРµРјРµС‰РµРЅРёСЏ
 Direction Puzzle::get_direction(int n) const {
-	int dx = pos[n].second - pos[0].second;
-	int dy = pos[n].first - pos[0].first;
+	int dx = pos[n].x - pos[0].x;
+	int dy = pos[n].y - pos[0].y;
 
-	// Если перемещение по вертикали
+	// Р•СЃР»Рё РїРµСЂРµРјРµС‰РµРЅРёРµ РїРѕ РіРѕСЂРёР·РѕРЅС‚Р°Р»Рё
 	if (dx == 0) {
-		// Если движение вверх
-		if (dy > 0) return Direction::Up;
-		// Если движение вниз
-		else if (dy < 0) return Direction::Down;
+		// Р•СЃР»Рё РґРІРёР¶РµРЅРёРµ РІР»РµРІРѕ
+		if (dy > 0) return Direction::Left;
+		// Р•СЃР»Рё РґРІРёР¶РµРЅРёРµ РІРїСЂР°РІРѕ
+		else if (dy < 0) return Direction::Right;
 	}
-	// Если перемещение по горизонтали
+	// Р•СЃР»Рё РїРµСЂРµРјРµС‰РµРЅРёРµ РїРѕ РІРµСЂС‚РёРєР°Р»Рё
 	else if (dy == 0) {
-		// Если движение влево
-		if (dx > 0) return Direction::Left;
-		// Если движение вправо
-		else if (dx < 0) return Direction::Right;
+		// Р•СЃР»Рё РґРІРёР¶РµРЅРёРµ РІРІРµСЂС…
+		if (dx > 0) return Direction::Up;
+		// Р•СЃР»Рё РґРІРёР¶РµРЅРёРµ РІРЅРёР·
+		else if (dx < 0) return Direction::Down;
 	}
-	// Если нет движения
+	// Р•СЃР»Рё РЅРµС‚ РїРµСЂРµРјРµС‰РµРЅРёСЏ
 	return Direction::None;
 }
 
-// Перемещение
+// РџРµСЂРµРјРµС‰РµРЅРёРµ
 void Puzzle::move(int n) {
 	std::swap(pos[n], pos[0]);
 }
 
-// Возврат решённого состояния
-std::array<std::pair<int, int>, 16> Puzzle::get_solved() {
-	std::array<std::pair<int, int>, 16> a{};
+// Р’РѕР·РІСЂР°С‚ СЂРµС€С‘РЅРЅРѕРіРѕ СЃРѕСЃС‚РѕСЏРЅРёСЏ
+std::array<sf::Vector2i, 16> Puzzle::get_solved() {
+	std::array<sf::Vector2i, 16> a{};
 	for (int i = 1; i < 16; ++i)
 		a[i] = { (i - 1) / 4, (i - 1) % 4 };
 
@@ -72,7 +72,7 @@ std::array<std::pair<int, int>, 16> Puzzle::get_solved() {
 	return a;
 }
 
-// Проверка решения головоломки
+// РџСЂРѕРІРµСЂРєР° СЂРµС€РµРЅРёСЏ РіРѕР»РѕРІРѕР»РѕРјРєРё
 bool Puzzle::is_solved() const {
 	return pos == SOLVED_POS;
 }

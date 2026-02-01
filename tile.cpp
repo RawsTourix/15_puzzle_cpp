@@ -1,22 +1,22 @@
 #include "logic.h"
 #include <utility>
 
-//// Конструктор преобразования малый
+//// РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёСЏ РјР°Р»С‹Р№
 //Tile::Tile(int value, sf::Sprite sprite)
 //	: Tile(value, sprite, sprite.getPosition()) {
 //}
 //
-//// Конструктор преобразования средний
+//// РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёСЏ СЃСЂРµРґРЅРёР№
 //Tile::Tile(int value, sf::Sprite sprite, sf::Vector2f current_px)
 //	: Tile(value, sprite, current_px, sf::Vector2f{ 0, 0 }, sf::Vector2f{ 0, 0 }) {
 //}
 //
-//// Конструктор преобразования большой
+//// РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёСЏ Р±РѕР»СЊС€РѕР№
 //Tile::Tile(int value, sf::Sprite sprite, sf::Vector2f current_px, sf::Vector2f start_px, sf::Vector2f target_px)
 //	: Tile(value, sprite, current_px, start_px, target_px, 0.0f, 0.0f, false) {
 //}
 
-// Конструктор с параметрами
+// РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ СЃ РїР°СЂР°РјРµС‚СЂР°РјРё
 Tile::Tile(int value, sf::Sprite sprite) //sf::Vector2f current_px, sf::Vector2f start_px, sf::Vector2f target_px, float elapsed, float duration, bool moving
 	: value(value),
 	sprite(sprite)
@@ -29,7 +29,7 @@ Tile::Tile(int value, sf::Sprite sprite) //sf::Vector2f current_px, sf::Vector2f
 {
 }
 
-// Конструктор перемещения
+// РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ РїРµСЂРµРјРµС‰РµРЅРёСЏ
 Tile::Tile(Tile&& other) noexcept
 	: value(std::exchange(other.value, 0)),
 	sprite(std::move(other.sprite))

@@ -1,63 +1,71 @@
 #include "textures.h"
 #include "game.h"
 #include <SFML/Graphics.hpp>
+#include <exception>
+#include <windows.h>
 
 int main() {
 
-    // Создание окна
+    // РЎРѕР·РґР°РЅРёРµ РѕРєРЅР°
     sf::RenderWindow window(sf::VideoMode({ 300u, 300u }), "15 puzzle");
     window.setVerticalSyncEnabled(true);
 
-    // Загрузка текстур
-    textures::load_all();
+    // Р—Р°РіСЂСѓР·РєР° С‚РµРєСЃС‚СѓСЂ
+    try {
+        textures::load_all();
+    }
+    catch (const std::exception& e) {
+        MessageBoxA(nullptr, e.what(), "15_puzzle - error", MB_OK | MB_ICONERROR);
+        return 1;
+    }
 
-    // Объект игры
+    // РћР±СЉРµРєС‚ РёРіСЂС‹
     Game game;
 
-    game.set_size(window);             // Задание размера игрового поля
-    game.set_tile_rects();             // Нарезка тайлмапа
-    game.layout_tiles();               // Масштабирование тайлов
-    game.syncronize_tile_positions();  // Выставление позиций тайлов
+    game.set_size(window);             // Р—Р°РґР°РЅРёРµ СЂР°Р·РјРµСЂР° РёРіСЂРѕРІРѕРіРѕ РїРѕР»СЏ
+    game.set_tile_rects();             // РќР°СЂРµР·РєР° С‚Р°Р№Р»РјР°РїР°
+    game.layout_tiles();               // РњР°СЃС€С‚Р°Р±РёСЂРѕРІР°РЅРёРµ С‚Р°Р№Р»РѕРІ
+    game.syncronize_tile_positions();  // Р’С‹СЃС‚Р°РІР»РµРЅРёРµ РїРѕР·РёС†РёР№ С‚Р°Р№Р»РѕРІ
 
-    // Создание таймера
+    // РЎРѕР·РґР°РЅРёРµ С‚Р°Р№РјРµСЂР°
     sf::Clock clock;
     float dt = 0.f;
 
-    // Данные об изменении размера окна
+    // Р”Р°РЅРЅС‹Рµ РѕР± РёР·РјРµРЅРµРЅРёРё СЂР°Р·РјРµСЂР° РѕРєРЅР°
     sf::Vector2u pending_resize{};
     bool has_resize = false;
 
-    // Данные о нажатии кнопки мыши
+    // Р”Р°РЅРЅС‹Рµ Рѕ РЅР°Р¶Р°С‚РёРё РєРЅРѕРїРєРё РјС‹С€Рё
     sf::Vector2i pending_mouse_button_press{};
     bool has_mouse_button_press = false;
 
-    // Главный цикл отображения
+    // Р“Р»Р°РІРЅС‹Р№ С†РёРєР» РѕС‚РѕР±СЂР°Р¶РµРЅРёСЏ
     while (window.isOpen()) {
 
-        // Обновление таймера
+        // РћР±РЅРѕРІР»РµРЅРёРµ С‚Р°Р№РјРµСЂР°
         dt = clock.restart().asSeconds();
         
-        // Обработка событий
+        // РћР±СЂР°Р±РѕС‚РєР° СЃРѕР±С‹С‚РёР№
         while (auto event = window.pollEvent()) {
-            // Закрытие окна
+            // Р—Р°РєСЂС‹С‚РёРµ РѕРєРЅР°
             if (event->is<sf::Event::Closed>()) {
                 window.close();
             }
-            // Изменение размера окна
+            // РР·РјРµРЅРµРЅРёРµ СЂР°Р·РјРµСЂР° РѕРєРЅР°
             if (const auto* e = event->getIf<sf::Event::Resized>()) {
-                // Получение размера окна в пикселях
+                // РџРѕР»СѓС‡РµРЅРёРµ СЂР°Р·РјРµСЂР° РѕРєРЅР° РІ РїРёРєСЃРµР»СЏС…
                 pending_resize = e->size;
                 has_resize = true;
             }
-            // Нажатие кнопки мыши
+            // РќР°Р¶Р°С‚РёРµ РєРЅРѕРїРєРё РјС‹С€Рё
             if (const auto* e = event->getIf<sf::Event::MouseButtonPressed>()) {
-                // Получение координат клика в пикселях
+                // РџРѕР»СѓС‡РµРЅРёРµ РєРѕРѕСЂРґРёРЅР°С‚ РєР»РёРєР° РІ РїРёРєСЃРµР»СЏС…
                 pending_mouse_button_press = e->position;
                 has_mouse_button_press = true;
             }
         }
 
-        // Если было изменение размера окна
+        // Р•СЃР»Рё Р±С‹Р»Рѕ РёР·РјРµРЅРµРЅРёРµ СЂР°Р·РјРµСЂР° РѕРєРЅР°
         if (has_resize) {
             const float w = static_cast<float>(pending_resize.x);
             const float h = static_cast<float>(pending_resize.y);
@@ -71,12 +79,12 @@ int main() {
             has_resize = false;
         }
 
-        // Если было нажатие кнопкой мыши
+        // Р•СЃР»Рё Р±С‹Р»Рѕ РЅР°Р¶Р°С‚РёРµ РєРЅРѕРїРєРѕР№ РјС‹С€Рё
         if (has_mouse_button_press) {
-            // Преобразование в координаты мира
+            // РџСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёРµ РІ РєРѕРѕСЂРґРёРЅР°С‚С‹ РјРёСЂР°
             sf::Vector2f world = window.mapPixelToCoords(pending_mouse_button_press);
 
-            // Обработка клика
+            // РћР±СЂР°Р±РѕС‚РєР° РєР»РёРєР°
             game.handle_click(world);
 
             has_mouse_button_press = false;

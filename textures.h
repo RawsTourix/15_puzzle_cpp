@@ -9,13 +9,13 @@
 
 namespace textures {
 
-    // Загрузка текстур
+    // Р—Р°РіСЂСѓР·РєР° С‚РµРєСЃС‚СѓСЂ
     void load_all();
 
-    // Геттер карты текстур
+    // Р“РµС‚С‚РµСЂ РєР°СЂС‚С‹ С‚РµРєСЃС‚СѓСЂ
     const sf::Texture& get(const std::string& key);
 
-    // Нарезка тайлмапа
+    // РќР°СЂРµР·РєР° С‚Р°Р№Р»РјР°РїР°
     sf::IntRect tile_rect(const sf::Texture&, int, int, int);
 
 }

@@ -10,10 +10,10 @@ namespace {
 
 namespace textures {
 
-    // Загрузка текстур
+    // Р—Р°РіСЂСѓР·РєР° С‚РµРєСЃС‚СѓСЂ
     void load_all() {
 
-        // Вспомогательная функция для загрузки
+        // Р’СЃРїРѕРјРѕРіР°С‚РµР»СЊРЅР°СЏ С„СѓРЅРєС†РёСЏ РґР»СЏ Р·Р°РіСЂСѓР·РєРё
         auto load = [](const char* key, const char* path) {
             sf::Texture t;
             if (!t.loadFromFile(std::string(path)))
@@ -22,7 +22,7 @@ namespace textures {
             loaded.emplace(key, std::move(t));
         };
 
-        // Загрузка текстур
+        // Р—Р°РіСЂСѓР·РєР° С‚РµРєСЃС‚СѓСЂ
         load("play_tilemap", assets::play_tilemap);
         load("continue", assets::menu_button_continue);
         load("exit", assets::menu_button_exit);
@@ -31,20 +31,20 @@ namespace textures {
 
     }
 
-    // Геттер карты текстур
+    // Р“РµС‚С‚РµСЂ РєР°СЂС‚С‹ С‚РµРєСЃС‚СѓСЂ
     const sf::Texture& get(const std::string& key) {
         return loaded.at(key);
     }
 
-    // Нарезка тайлмапа
+    // РќР°СЂРµР·РєР° С‚Р°Р№Р»РјР°РїР°
     sf::IntRect tile_rect(const sf::Texture& atlas, int value, int cols, int rows)
     {
-        // Значение: 1..(cols*rows) или 1..15
+        // Р—РЅР°С‡РµРЅРёРµ: 1..(cols*rows) РёР»Рё 1..15
         const auto s = atlas.getSize();
         const int atlas_w = static_cast<int>(s.x);
         const int atlas_h = static_cast<int>(s.y);
 
-        // Защита от кривого атласа
+        // Р—Р°С‰РёС‚Р° РѕС‚ РєСЂРёРІРѕРіРѕ Р°С‚Р»Р°СЃР°
         if (cols <= 0 || rows <= 0) throw std::runtime_error("Bad grid");
         if (atlas_w % cols != 0 || atlas_h % rows != 0) throw std::runtime_error("Atlas size not divisible by grid");
         if (value < 1 || value > cols * rows) throw std::runtime_error("Bad tile value");
