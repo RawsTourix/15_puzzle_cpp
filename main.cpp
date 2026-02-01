@@ -18,10 +18,18 @@ int main() {
     game.set_size(window);             // Задание размера игрового поля
     game.set_tile_rects();             // Нарезка тайлмапа
     game.layout_tiles();               // Масштабирование тайлов
-    game.syncronize_tile_positions();  // Выставление исходных позиций тайлов
+    game.syncronize_tile_positions();  // Выставление позиций тайлов
+
+    // Создание таймера
+    sf::Clock clock;
+    float dt = 0.f;
 
     // Главный цикл отображения
     while (window.isOpen()) {
+
+        // Обновление таймера
+        dt = clock.restart().asSeconds();
+        
         // Обработка событий
         while (const std::optional<sf::Event> event = window.pollEvent()) {
             // Закрытие окна
@@ -29,7 +37,7 @@ int main() {
                 window.close();
             }
             // Изменение размера окна
-            else if (const auto* e = event->getIf<sf::Event::Resized>()) {
+            if (const auto* e = event->getIf<sf::Event::Resized>()) {
                 const float w = static_cast<float>(e->size.x);
                 const float h = static_cast<float>(e->size.y);
 
@@ -39,7 +47,18 @@ int main() {
                 game.layout_tiles();
                 game.syncronize_tile_positions();
             }
+            // Нажатие кнопки мыши
+            if (const auto* e = event->getIf<sf::Event::MouseButtonPressed>()) {
+                // Получение координат клика в пикселях и преобразование в координаты View
+                sf::Vector2i pixel{ e->position.x, e->position.y };
+                sf::Vector2f world = window.mapPixelToCoords(pixel);
+                
+                // Обработка клика
+                game.handle_click(world);
+            }
         }
+
+        game.update(dt);
 
         window.clear();
         game.draw(window);

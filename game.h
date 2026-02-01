@@ -14,7 +14,31 @@ enum class State {
     Play,     // Игра. Таймер запущен.
     Move,     // Тайл перемещается. Действия на время анимации перемещения заблокированы. Таймер идёт.
     Pause,    // Пауза. Действия заблокированы. Таймер на паузе.
-    Victory   // Пазл собран. Таймер остановлен. Следующее нажатие запустит перемешивание.
+    Solved    // Пазл собран. Таймер остановлен. Следующее нажатие запустит перемешивание.
+};
+
+// Перемещаемый тайл
+struct MovingTile {
+    int value;                     // Значение тайла (0 - нет анимации)
+    std::pair<int, int> from_idx;  // Значение клетки, откуда начинается движение
+    std::pair<int, int> to_idx;    // Значение клетки, куда направлено движение
+    float time;                    // Прошедшее время движения
+    float duration;                // Продолжительность движения
+
+    // Конструктор по умолчанию
+    MovingTile();
+
+    // Конструктор с параметрами
+    MovingTile(int, std::pair<int, int>, std::pair<int, int>, float, float);
+
+    // Деструктор
+    ~MovingTile() = default;
+
+    // Задание значений
+    void start_moving(int, std::pair<int, int> from_idx, std::pair<int, int> to_idx, float, float);
+
+    // Обнуление
+    void stop_moving();
 };
 
 // Игра
@@ -24,20 +48,27 @@ private:
     State state;                 // Состояние игры
     Puzzle puzzle;               // Состояние игрового поля
     std::array<Tile, 15> tiles;  // Состояние тайлов
-    sf::Vector2f origin_px;      // Левый верхний край
-    float time_sec;              // Таймер игры
+    float timer;                 // Таймер игры
+    bool timer_running;          // Флаг таймера
 
+    float cell = 0.f;            // Вычисляемый размер клетки для тайла
+    sf::Vector2f origin;         // Вычисляемый верхний левый угол игрового поля
+    MovingTile moving_tile;      // Перемещаемый тайл
 
 public:
     // Константы количества строк и столбцов
     static constexpr int ROWS = 4;
     static constexpr int COLUMNS = 4;
 
+    // Константы скорости перемещения
+    static constexpr float DURATION = 0.12f;
+    static constexpr float SHUFFLE_DURATION = 0.02f;
+
     // Конструктор по умолчанию
     Game();
 
     // Конструктор с параметрами
-    Game(State, Puzzle, std::array<Tile, 15>, sf::Vector2f, float);
+    Game(State, Puzzle, std::array<Tile, 15>, float, bool);
 
     // Деструктор
     ~Game() = default;
@@ -57,8 +88,14 @@ public:
     // Масштабирование тайлов
     void layout_tiles();
 
-    // Расстановка тайлов в начальное состояние
+    // Выставление позиций тайлов
     void syncronize_tile_positions();
+
+    // Обработка клика
+    void handle_click(sf::Vector2f);
+
+    // Обновление таймера
+    void update(float);
 
 };
 
