@@ -1,7 +1,6 @@
 #include "textures.h"
 #include "game.h"
 #include <SFML/Graphics.hpp>
-#include <optional>
 
 int main() {
 
@@ -24,6 +23,14 @@ int main() {
     sf::Clock clock;
     float dt = 0.f;
 
+    // Данные об изменении размера окна
+    sf::Vector2u pending_resize{};
+    bool has_resize = false;
+
+    // Данные о нажатии кнопки мыши
+    sf::Vector2i pending_mouse_button_press{};
+    bool has_mouse_button_press = false;
+
     // Главный цикл отображения
     while (window.isOpen()) {
 
@@ -31,31 +38,48 @@ int main() {
         dt = clock.restart().asSeconds();
         
         // Обработка событий
-        while (const std::optional<sf::Event> event = window.pollEvent()) {
+        while (auto event = window.pollEvent()) {
             // Закрытие окна
             if (event->is<sf::Event::Closed>()) {
                 window.close();
             }
             // Изменение размера окна
             if (const auto* e = event->getIf<sf::Event::Resized>()) {
-                const float w = static_cast<float>(e->size.x);
-                const float h = static_cast<float>(e->size.y);
-
-                window.setView(sf::View(sf::FloatRect({ 0.f, 0.f }, { w, h })));
-
-                game.set_size(window);
-                game.layout_tiles();
-                game.syncronize_tile_positions();
+                // Получение размера окна в пикселях
+                pending_resize = e->size;
+                has_resize = true;
             }
             // Нажатие кнопки мыши
             if (const auto* e = event->getIf<sf::Event::MouseButtonPressed>()) {
-                // Получение координат клика в пикселях и преобразование в координаты View
-                sf::Vector2i pixel{ e->position.x, e->position.y };
-                sf::Vector2f world = window.mapPixelToCoords(pixel);
-                
-                // Обработка клика
-                game.handle_click(world);
+                // Получение координат клика в пикселях
+                pending_mouse_button_press = e->position;
+                has_mouse_button_press = true;
             }
+        }
+
+        // Если было изменение размера окна
+        if (has_resize) {
+            const float w = static_cast<float>(pending_resize.x);
+            const float h = static_cast<float>(pending_resize.y);
+
+            window.setView(sf::View(sf::FloatRect({ 0.f, 0.f }, { w, h })));
+
+            game.set_size(window);
+            game.layout_tiles();
+            game.syncronize_tile_positions();
+
+            has_resize = false;
+        }
+
+        // Если было нажатие кнопкой мыши
+        if (has_mouse_button_press) {
+            // Преобразование в координаты мира
+            sf::Vector2f world = window.mapPixelToCoords(pending_mouse_button_press);
+
+            // Обработка клика
+            game.handle_click(world);
+
+            has_mouse_button_press = false;
         }
 
         game.update(dt);
