@@ -1,6 +1,7 @@
 ﻿  game.cpp
   puzzle.cpp
   main.cpp
+  random.cpp
   textures.cpp
   tile.cpp
   Создание кода...

@@ -25,6 +25,9 @@
     <Filter Include="Логика игры">
       <UniqueIdentifier>{ce34a5b8-c55c-4d87-946f-188aa6a6c5c2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Рандом">
+      <UniqueIdentifier>{3b24984c-880c-4f07-9142-a4f3c1357fa6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -42,6 +45,9 @@
     <ClCompile Include="game.cpp">
       <Filter>Игра</Filter>
     </ClCompile>
+    <ClCompile Include="random.cpp">
+      <Filter>Рандом</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="textures.h">
@@ -55,6 +61,9 @@
     </ClInclude>
     <ClInclude Include="game.h">
       <Filter>Игра</Filter>
+    </ClInclude>
+    <ClInclude Include="random.h">
+      <Filter>Рандом</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

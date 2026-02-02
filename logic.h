@@ -20,27 +20,12 @@ enum class Direction {
 struct Tile {
 	int value;               // номер тайла (0—15)
 	sf::Sprite sprite;       // спрайт тайла
-	//sf::Vector2f current_px; // текущая позиция (px)
-	//sf::Vector2f start_px;   // старт анимации (px)
-	//sf::Vector2f target_px;  // цель анимации (px)
-	//float elapsed;           // прошло времени (s)
-	//float duration;          // длительность (s)
-	//bool moving;             // флаг перемещения
 
 	// Конструктор по умолчанию
 	Tile() = delete;
 
-	//// Конструктор преобразования малый
-	//Tile(int, sf::Sprite);
-
-	//// Конструктор преобразования средний
-	//Tile(int, sf::Sprite, sf::Vector2f);
-
-	//// Конструктор преобразования большой
-	//Tile(int, sf::Sprite, sf::Vector2f, sf::Vector2f, sf::Vector2f);
-
 	// Конструктор с параметрами
-	Tile(int, sf::Sprite); //sf::Vector2f, sf::Vector2f, sf::Vector2f, float, float, bool*/
+	Tile(int, sf::Sprite);
 
 	// Конструктор копирования
 	Tile(const Tile&) = default;

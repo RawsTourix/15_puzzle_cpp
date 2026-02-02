@@ -2,6 +2,7 @@
 
 #include "game.h"
 #include "textures.h"
+#include "random.h"
 #include <SFML/Graphics/Sprite.hpp>
 #include <array>
 #include <utility>
@@ -10,21 +11,19 @@
 
 // Конструктор по умолчанию
 MovingTile::MovingTile()
-	: MovingTile(0, sf::Vector2i{}, sf::Vector2i{}, 0.f, Game::DURATION) {
+	: MovingTile(0, 0.f, Game::DURATION) {
 }
 
 // Конструктор с параметрами
-MovingTile::MovingTile(int value, sf::Vector2i from_pos, sf::Vector2i to_pos, float time, float duration)
+MovingTile::MovingTile(int value, float time, float duration)
 	: value(value),
-	from_pos(from_pos),
-	to_pos(to_pos),
 	time(time),
 	duration(duration) {
 }
 
 // Задание значений
-void MovingTile::start_moving(int value, sf::Vector2i from_pos, sf::Vector2i to_pos, float time, float duration) {
-	*this = { value, from_pos, to_pos, time, duration };
+void MovingTile::start_moving(int value, float time, float duration) {
+	*this = { value, time, duration };
 }
 
 // Обнуление
@@ -35,7 +34,7 @@ void MovingTile::stop_moving() {
 // Конструктор по умолчанию
 Game::Game()
 	: Game(
-		State::Play,
+		State::Solved,
 		Puzzle(),
 		std::array<Tile, 15>{{
 			Tile(1, sf::Sprite(textures::get("play_tilemap"))),
@@ -118,13 +117,19 @@ void Game::layout_tiles() {
 
 // Выставление позиций тайлов
 void Game::syncronize_tile_positions() {
+	const auto& pos = puzzle.get_pos();
 	for (auto& tile : tiles) {
 		// Если текущий тайл не перемещается
 		if (tile.value != moving_tile.value) {
 			int value = tile.value;
-			sf::Vector2i pos = puzzle.get_pos().at(value);
 
-			tile.sprite.setPosition(origin + static_cast<sf::Vector2f>(pos) * cell);
+			// Получение логических позиций
+			sf::Vector2i rc = pos.at(value);
+
+			// Преобразование в позиции x и y
+			sf::Vector2f xy{ float(rc.y), float(rc.x) };
+
+			tile.sprite.setPosition(origin + xy * cell);
 		}
 	}
 }
@@ -151,7 +156,11 @@ void Game::handle_click(sf::Vector2f pos) {
 				// Сброс таймера
 				timer = 0.f;
 
+				// Задаём рандомное число перемещений для перемешивания
+				shuffle_num = rand_int(SHUFFLE_NUM_RAND.x, SHUFFLE_NUM_RAND.y);
+
 				// Перемешивание
+				is_shuffle = true;
 				state = State::Shuffle;
 				std::cout << "Shuffle." << std::endl;
 			}
@@ -173,14 +182,8 @@ void Game::handle_click(sf::Vector2f pos) {
 
 				// Если тайл можно переместить
 				if (puzzle.can_move(value) && dir != Direction::None) {
-					// Получение текущей позиции тайла
-					sf::Vector2i from_pos = puzzle.get_pos().at(value);
-
-					// Вычисление точки перемещения
-					sf::Vector2i to_pos = from_pos + vector_direction(dir);
-
 					// Запуск перемещения
-					moving_tile.start_moving(value, from_pos, to_pos, 0, DURATION);
+					moving_tile.start_moving(value, 0, DURATION);
 					
 					// Перемещение
 					state = State::Move;
@@ -192,14 +195,6 @@ void Game::handle_click(sf::Vector2f pos) {
 			std::cout << "Empty tile" << std::endl;
 		}
 	}
-	// Перемешивание
-	else if (state == State::Shuffle) {
-		/* перемешивание */
-
-		// Готовность
-		state = State::Ready;
-		std::cout << "Ready!" << std::endl;
-	}
 
 }
 
@@ -210,6 +205,7 @@ void Game::update(float dt) {
 
 	// Обновление анимации
 	if (moving_tile.value != 0) {
+		// Вычисление временичx
 		moving_tile.time += dt;
 		float t = std::clamp(moving_tile.time / moving_tile.duration, 0.f, 1.f);
 		t = t * t * (3 - 2 * t); // (smoothstep)
@@ -225,23 +221,30 @@ void Game::update(float dt) {
 			// Получение ссылки на спрайт
 			sf::Sprite& sprite = it->sprite;
 
-			// Вычисление логических позиций
-			sf::Vector2i from_pos = moving_tile.from_pos;
-			sf::Vector2i to_pos = moving_tile.to_pos;
+			// Получение константной ссылки логических позиций
+			const auto& pos = puzzle.get_pos();
+
+			// Получение конечной и начальной логических позиций
+			sf::Vector2i to_pos_rc = pos.at(0);
+			sf::Vector2i from_pos_rc = pos.at(value);
+
+			// Преобразование в позиции x и y
+			sf::Vector2f to_pos_xy = { float(to_pos_rc.y), float(to_pos_rc.x) };
+			sf::Vector2f from_pos_xy = { float(from_pos_rc.y), float(from_pos_rc.x) };
 
 			// Вычисление конечной позиции
-			sf::Vector2f target_px = origin + static_cast<sf::Vector2f>(to_pos) * cell;
+			sf::Vector2f target_px = origin + to_pos_xy * cell;
 
 			// Если анимация ещё идёт
 			if (t < 1) {
 
 				// Вычисление начальной позиции
-				sf::Vector2f start_px = origin + static_cast<sf::Vector2f>(from_pos) * cell;
+				sf::Vector2f start_px = origin + from_pos_xy * cell;
 
 				// Вычисление текущей позиции перемещения
-				sf::Vector2f pos = start_px + (target_px - start_px) * t;
+				sf::Vector2f p = start_px + (target_px - start_px) * t;
 
-				sprite.setPosition(pos);
+				sprite.setPosition(p);
 			}
 			// Если анимация закончилась
 			else {
@@ -254,23 +257,66 @@ void Game::update(float dt) {
 				// Остановка перемещаемого тайла
 				moving_tile.stop_moving();
 				
-				// Если головоломка собрана
-				if (puzzle.is_solved()) {
-					// Выключение таймера
-					timer_running = false;
-
-					// Собрана
-					state = State::Solved;
-
-					/* поздравление */
-					std::cout << "Solved!!!" << std::endl;
+				// Если пазл перемешивается
+				if (is_shuffle) {
+					state = State::Shuffle;
 				}
 				else {
-					// Игра
-					state = State::Play;
-					std::cout << "Continue playing..." << std::endl;
+					// Если головоломка собрана
+					if (puzzle.is_solved()) {
+						// Выключение таймера
+						timer_running = false;
+
+						// Собрана
+						state = State::Solved;
+
+						/* поздравление */
+						std::cout << "Solved!!!" << std::endl;
+					}
+					else {
+						// Игра
+						state = State::Play;
+						std::cout << "Continue playing..." << std::endl;
+					}
 				}
 			}
+		}
+	}
+	// Перемешивание
+	if (state == State::Shuffle) {
+		// Получение значений, которые можно переместить
+		std::vector<int> values;
+		for (int v = 0; v < ROWS * COLUMNS; ++v) {
+			if (puzzle.can_move(v) && v != prev_shuffle_value) values.push_back(v);
+		}
+
+		// Если есть тайлы для перемещения (ну мало ли их может не быть, хз)
+		if (values.size() > 0) {
+			// Выбор тайла для перемещения
+			int n = rand_int(0, static_cast<int>(values.size()) - 1);
+			int value = values.at(n);
+
+			// Запуск перемещения
+			moving_tile.start_moving(value, 0, SHUFFLE_DURATION);
+			prev_shuffle_value = value;
+			--shuffle_num;
+
+			// Перемещение
+			state = State::Move;
+			std::cout << "Move tile." << std::endl;
+		}
+		// Если нет тайлов для перемещения
+		else {
+			shuffle_num = 0;
+			std::cout << "Shuffle Error: no tiles to move." << std::endl;
+		}
+
+		// Если перемешано
+		if (shuffle_num <= 0) {
+			// Готовность
+			is_shuffle = false;
+			state = State::Ready;
+			std::cout << "Ready!" << std::endl;
 		}
 	}
 }

@@ -20,8 +20,6 @@ enum class State {
 // Перемещаемый тайл
 struct MovingTile {
     int value;                     // Значение тайла (0 - нет анимации)
-    sf::Vector2i from_pos;  // Значение клетки, откуда начинается движение
-    sf::Vector2i to_pos;    // Значение клетки, куда направлено движение
     float time;                    // Прошедшее время движения
     float duration;                // Продолжительность движения
 
@@ -29,13 +27,13 @@ struct MovingTile {
     MovingTile();
 
     // Конструктор с параметрами
-    MovingTile(int, sf::Vector2i, sf::Vector2i, float, float);
+    MovingTile(int, float, float);
 
     // Деструктор
     ~MovingTile() = default;
 
     // Задание значений
-    void start_moving(int, sf::Vector2i from_pos, sf::Vector2i to_pos, float, float);
+    void start_moving(int, float, float);
 
     // Обнуление
     void stop_moving();
@@ -44,6 +42,7 @@ struct MovingTile {
 // Игра
 class Game {
 private:
+    // Основные поля
     sf::Vector2f size;           // Размер игрового поля
     State state;                 // Состояние игры
     Puzzle puzzle;               // Состояние игрового поля
@@ -51,9 +50,13 @@ private:
     float timer;                 // Таймер игры
     bool timer_running;          // Флаг таймера
 
+    // Дополнительные поля
     float cell = 0.f;            // Вычисляемый размер клетки для тайла
     sf::Vector2f origin;         // Вычисляемый верхний левый угол игрового поля
     MovingTile moving_tile;      // Перемещаемый тайл
+    bool is_shuffle = false;     // Флаг перемешивания
+    int shuffle_num = 0;         // Количество шагов перемешивания
+    int prev_shuffle_value = 0;  // Значение предыдущего перемещённого тайла при перемешивании (чтобы следующий ход не отменял предыдущий)
 
 public:
     // Константы количества строк и столбцов
@@ -63,6 +66,9 @@ public:
     // Константы скорости перемещения
     static constexpr float DURATION = 0.12f;
     static constexpr float SHUFFLE_DURATION = 0.02f;
+
+    // Константы рандома для перемешивания
+    static constexpr sf::Vector2i SHUFFLE_NUM_RAND{ 30, 50 };
 
     // Конструктор по умолчанию
     Game();

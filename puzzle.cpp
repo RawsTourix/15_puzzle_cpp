@@ -59,7 +59,8 @@ Direction Puzzle::get_direction(int n) const {
 
 // Перемещение
 void Puzzle::move(int n) {
-	std::swap(pos[n], pos[0]);
+	if (n > 0 && n < 16)
+		std::swap(pos[n], pos[0]);
 }
 
 // Возврат решённого состояния
