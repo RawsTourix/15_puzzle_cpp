@@ -7,7 +7,7 @@
 int main() {
 
     // Создание окна
-    sf::RenderWindow window(sf::VideoMode({ 300u, 300u }), "15 puzzle");
+    sf::RenderWindow window(sf::VideoMode({ 300u, 300u }), Game::TITLE);
     window.setVerticalSyncEnabled(true);
 
     // Загрузка текстур
@@ -98,6 +98,7 @@ int main() {
         }
 
         game.update(dt);
+        game.update_title(window);
 
         window.clear();
         game.draw(window);

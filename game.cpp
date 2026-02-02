@@ -8,6 +8,8 @@
 #include <utility>
 #include <algorithm>
 #include <iostream>
+#include <string>
+#include <sstream>
 
 // Конструктор по умолчанию
 MovingTile::MovingTile()
@@ -155,6 +157,7 @@ void Game::handle_click(sf::Vector2f pos) {
 			if (state == State::Solved) {
 				// Сброс таймера
 				timer = 0.f;
+				total_sec = -1;
 
 				// Задаём рандомное число перемещений для перемешивания
 				shuffle_num = rand_int(SHUFFLE_NUM_RAND.x, SHUFFLE_NUM_RAND.y);
@@ -198,10 +201,12 @@ void Game::handle_click(sf::Vector2f pos) {
 
 }
 
-// Обновление процессов, связанных с временем
+// Обновление процессов, завичящих от времени
 void Game::update(float dt) {
 	// Обновление игрового таймера
-	if (timer_running) timer += dt;
+	if (timer_running) {
+		timer += dt;
+	}
 
 	// Обновление анимации
 	if (moving_tile.value != 0) {
@@ -261,23 +266,21 @@ void Game::update(float dt) {
 				if (is_shuffle) {
 					state = State::Shuffle;
 				}
-				else {
-					// Если головоломка собрана
-					if (puzzle.is_solved()) {
-						// Выключение таймера
-						timer_running = false;
+				// Если головоломка собрана
+				else if (puzzle.is_solved()) {
+					// Выключение таймера
+					timer_running = false;
 
-						// Собрана
-						state = State::Solved;
+					// Собрана
+					state = State::Solved;
 
-						/* поздравление */
-						std::cout << "Solved!!!" << std::endl;
-					}
-					else {
-						// Игра
-						state = State::Play;
-						std::cout << "Continue playing..." << std::endl;
-					}
+					/* поздравление */
+					std::cout << "Solved!!!" << std::endl;
+				}
+				else if (state != State::Ready) {
+					// Игра
+					state = State::Play;
+					std::cout << "Continue playing..." << std::endl;
 				}
 			}
 		}
@@ -319,4 +322,32 @@ void Game::update(float dt) {
 			std::cout << "Ready!" << std::endl;
 		}
 	}
+}
+
+// Обновление названия окна
+void Game::update_title(sf::RenderWindow& window) {
+	if (timer_running) {
+		int sec = static_cast<int>(timer);
+		if (sec > total_sec) {
+			total_sec = sec;
+			window.setTitle(std::string(TITLE) + " (" + format_hhmmss(total_sec) + ")");
+		}
+	}
+}
+
+// Форматирование времени
+std::string Game::format_hhmmss(int totalSec)
+{
+	if (totalSec < 0) totalSec = 0;
+
+	int h = totalSec / 3600;
+	int m = (totalSec / 60) % 60;
+	int s = totalSec % 60;
+
+	std::ostringstream oss;
+	oss << std::setw(2) << std::setfill('0') << h << ':'
+		<< std::setw(2) << std::setfill('0') << m << ':'
+		<< std::setw(2) << std::setfill('0') << s;
+
+	return oss.str();
 }

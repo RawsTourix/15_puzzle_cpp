@@ -3,9 +3,10 @@
 #ifndef GAME_H
 #define GAME_H
 
+#include "logic.h"
 #include <SFML/Graphics.hpp>
 #include <array>
-#include "logic.h"
+#include <string>
 
 // Состояние игры
 enum class State {
@@ -43,22 +44,26 @@ struct MovingTile {
 class Game {
 private:
     // Основные поля
-    sf::Vector2f size;           // Размер игрового поля
-    State state;                 // Состояние игры
-    Puzzle puzzle;               // Состояние игрового поля
-    std::array<Tile, 15> tiles;  // Состояние тайлов
-    float timer;                 // Таймер игры
-    bool timer_running;          // Флаг таймера
+    sf::Vector2f size;                  // Размер игрового поля
+    State state;                        // Состояние игры
+    Puzzle puzzle;                      // Состояние игрового поля
+    std::array<Tile, 15> tiles;         // Состояние тайлов
+    float timer;                        // Таймер игры
+    bool timer_running;                 // Флаг таймера
 
     // Дополнительные поля
-    float cell = 0.f;            // Вычисляемый размер клетки для тайла
-    sf::Vector2f origin;         // Вычисляемый верхний левый угол игрового поля
-    MovingTile moving_tile;      // Перемещаемый тайл
-    bool is_shuffle = false;     // Флаг перемешивания
-    int shuffle_num = 0;         // Количество шагов перемешивания
-    int prev_shuffle_value = 0;  // Значение предыдущего перемещённого тайла при перемешивании (чтобы следующий ход не отменял предыдущий)
+    float cell = 0.f;                   // Вычисляемый размер клетки для тайла
+    sf::Vector2f origin;                // Вычисляемый верхний левый угол игрового поля
+    MovingTile moving_tile;             // Перемещаемый тайл
+    bool is_shuffle = false;            // Флаг перемешивания
+    int shuffle_num = 0;                // Количество шагов перемешивания
+    int prev_shuffle_value = 0;         // Значение предыдущего перемещённого тайла при перемешивании (чтобы следующий ход не отменял предыдущий)
+    int total_sec = -1;                 // Время в секундах
 
 public:
+    // Название игры
+    static constexpr const char* TITLE = "15 puzzle";
+
     // Константы количества строк и столбцов
     static constexpr int ROWS = 4;
     static constexpr int COLUMNS = 4;
@@ -103,8 +108,14 @@ public:
     // Обработка клика
     void handle_click(sf::Vector2f);
 
-    // Обновление таймера
+    // Обновление процессов, зависящих от времени
     void update(float);
+
+    // Обновление названия окна
+    void update_title(sf::RenderWindow&);
+
+    // Форматирование времени
+    std::string format_hhmmss(int);
 
 };
 
