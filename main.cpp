@@ -22,10 +22,16 @@ int main() {
     // Объект игры
     Game game;
 
-    game.set_size(window);             // Задание размера игрового поля
-    game.set_tile_rects();             // Нарезка тайлмапа
-    game.layout_tiles();               // Масштабирование тайлов
-    game.syncronize_tile_positions();  // Выставление позиций тайлов
+    try {
+        game.set_size(window);             // Задание размера игрового поля
+        game.set_tile_rects();             // Нарезка тайлмапа
+        game.layout_tiles();               // Масштабирование тайлов
+        game.syncronize_tile_positions();  // Выставление позиций тайлов
+    }
+    catch (const std::exception& e) {
+        MessageBoxA(nullptr, e.what(), "15_puzzle - error", MB_OK | MB_ICONERROR);
+        return 1;
+    }
 
     // Создание таймера
     sf::Clock clock;
@@ -38,6 +44,7 @@ int main() {
     // Данные о нажатии кнопки мыши
     sf::Vector2i pending_mouse_button_press{};
     bool has_mouse_button_press = false;
+    
 
     // Главный цикл отображения
     while (window.isOpen()) {
