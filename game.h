@@ -59,6 +59,7 @@ private:
     int shuffle_num = 0;                // Количество шагов перемешивания
     int prev_shuffle_value = 0;         // Значение предыдущего перемещённого тайла при перемешивании (чтобы следующий ход не отменял предыдущий)
     int total_sec = -1;                 // Время в секундах
+    State prev_state = state;           // Предыдущее состояние игры
 
 public:
     // Название игры
@@ -99,6 +100,9 @@ public:
     // Получение вектора направления
     sf::Vector2i vector_direction(Direction);
 
+    // Получение состояния игры текстом
+    std::string get_state_as_str(State);
+
     // Масштабирование тайлов
     void layout_tiles();
 
@@ -106,16 +110,25 @@ public:
     void syncronize_tile_positions();
 
     // Обработка клика
-    void handle_click(sf::Vector2f);
+    void handle_click(sf::RenderWindow&, sf::Vector2f);
 
     // Обновление процессов, зависящих от времени
-    void update(float);
+    void update(sf::RenderWindow&, float);
 
     // Обновление названия окна
-    void update_title(sf::RenderWindow&);
+    void update_timer_title(sf::RenderWindow&);
 
     // Форматирование времени
     std::string format_hhmmss(int);
+
+    // Задание названия окна с временем в скобках
+    void set_time_title(sf::RenderWindow&);
+
+    // Задание названия окна с текущим состоянием игры в скобках
+    void set_state_title(sf::RenderWindow&);
+
+    // Обработчик паузы
+    void handle_pause(sf::RenderWindow&);
 
 };
 

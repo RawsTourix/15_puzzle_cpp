@@ -70,6 +70,16 @@ int main() {
                 pending_mouse_button_press = e->position;
                 has_mouse_button_press = true;
             }
+            // Нажатие клавиши клавиатуры
+            if (const auto* k = event->getIf<sf::Event::KeyPressed>())
+            {
+                // Клавиша Escape
+                if (k->code == sf::Keyboard::Key::Escape)
+                {
+                    // Обработка паузы
+                    game.handle_pause(window);
+                }
+            }
         }
 
         // Если было изменение размера окна
@@ -92,13 +102,12 @@ int main() {
             sf::Vector2f world = window.mapPixelToCoords(pending_mouse_button_press);
 
             // Обработка клика
-            game.handle_click(world);
+            game.handle_click(window, world);
 
             has_mouse_button_press = false;
         }
 
-        game.update(dt);
-        game.update_title(window);
+        game.update(window, dt);
 
         window.clear();
         game.draw(window);

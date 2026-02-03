@@ -10,6 +10,7 @@
 #include <iostream>
 #include <string>
 #include <sstream>
+#include <windows.h>
 
 // Конструктор по умолчанию
 MovingTile::MovingTile()
@@ -101,6 +102,18 @@ sf::Vector2i Game::vector_direction(Direction dir) {
 	else return sf::Vector2i{};
 }
 
+// Получение состояния игры текстом
+std::string Game::get_state_as_str(State state) {
+	if      (state == State::Move)	  return "Move";
+	else if (state == State::Pause)   return "Pause";
+	else if (state == State::Play)    return "Play";
+	else if (state == State::Ready)   return "Ready";
+	else if (state == State::Shuffle) return "Shuffle";
+	else if (state == State::Solved)  return "Solved";
+	else						      return "";
+
+}
+
 // Масштабирование тайлов
 void Game::layout_tiles() {
 	// Расчёт размера клетки и левого верхнего угла
@@ -137,7 +150,7 @@ void Game::syncronize_tile_positions() {
 }
 
 // Обработка клика
-void Game::handle_click(sf::Vector2f pos) {
+void Game::handle_click(sf::RenderWindow& window, sf::Vector2f pos) {
 
 	// Не перемещение,не перемешивание, и не пауза
 	if (state != State::Move && state != State::Shuffle && state != State::Pause) {
@@ -164,7 +177,9 @@ void Game::handle_click(sf::Vector2f pos) {
 
 				// Перемешивание
 				is_shuffle = true;
+				prev_state = state;
 				state = State::Shuffle;
+				set_state_title(window);
 				std::cout << "Shuffle." << std::endl;
 			}
 
@@ -174,6 +189,7 @@ void Game::handle_click(sf::Vector2f pos) {
 				timer_running = true;
 
 				// Игра
+				prev_state = state;
 				state = State::Play;
 				std::cout << "Play!" << std::endl;
 			}
@@ -189,6 +205,7 @@ void Game::handle_click(sf::Vector2f pos) {
 					moving_tile.start_moving(value, 0, DURATION);
 					
 					// Перемещение
+					prev_state = state;
 					state = State::Move;
 					std::cout << "Move tile." << std::endl;
 				}
@@ -202,16 +219,19 @@ void Game::handle_click(sf::Vector2f pos) {
 }
 
 // Обновление процессов, завичящих от времени
-void Game::update(float dt) {
-	// Обновление игрового таймера
-	if (timer_running) {
+void Game::update(sf::RenderWindow& window, float dt) {
+	if (timer_running && state != State::Pause) {
+		// Обновление игрового таймера
 		timer += dt;
+
+		// Обновление таймера в назвнаии окна
+		update_timer_title(window);
 	}
 
 	// Обновление анимации
 	if (moving_tile.value != 0) {
-		// Вычисление временичx
-		moving_tile.time += dt;
+		// Вычисление времени
+		if (state != State::Pause) moving_tile.time += dt;
 		float t = std::clamp(moving_tile.time / moving_tile.duration, 0.f, 1.f);
 		t = t * t * (3 - 2 * t); // (smoothstep)
 
@@ -219,8 +239,8 @@ void Game::update(float dt) {
 		int value = moving_tile.value;
 		auto it = std::find_if(tiles.begin(), tiles.end(), [value](const Tile& tile) {
 			return value == tile.value;
-		});
-		
+			});
+
 		// Если итератор указывает не на конец
 		if (it != tiles.end()) {
 			// Получение ссылки на спрайт
@@ -261,9 +281,10 @@ void Game::update(float dt) {
 
 				// Остановка перемещаемого тайла
 				moving_tile.stop_moving();
-				
+
 				// Если пазл перемешивается
 				if (is_shuffle) {
+					prev_state = state;
 					state = State::Shuffle;
 				}
 				// Если головоломка собрана
@@ -272,13 +293,17 @@ void Game::update(float dt) {
 					timer_running = false;
 
 					// Собрана
+					prev_state = state;
 					state = State::Solved;
 
-					/* поздравление */
+					std::string msg = "Your time: " + format_hhmmss(total_sec);
+					MessageBoxA(nullptr, msg.c_str(), "Congratulations!", MB_OK | MB_ICONINFORMATION);
+
 					std::cout << "Solved!!!" << std::endl;
 				}
 				else if (state != State::Ready) {
 					// Игра
+					prev_state = state;
 					state = State::Play;
 					std::cout << "Continue playing..." << std::endl;
 				}
@@ -305,6 +330,7 @@ void Game::update(float dt) {
 			--shuffle_num;
 
 			// Перемещение
+			prev_state = state;
 			state = State::Move;
 			std::cout << "Move tile." << std::endl;
 		}
@@ -318,31 +344,33 @@ void Game::update(float dt) {
 		if (shuffle_num <= 0) {
 			// Готовность
 			is_shuffle = false;
+			prev_state = state;
 			state = State::Ready;
+			set_state_title(window);
 			std::cout << "Ready!" << std::endl;
 		}
 	}
 }
 
 // Обновление названия окна
-void Game::update_title(sf::RenderWindow& window) {
+void Game::update_timer_title(sf::RenderWindow& window) {
 	if (timer_running) {
 		int sec = static_cast<int>(timer);
 		if (sec > total_sec) {
 			total_sec = sec;
-			window.setTitle(std::string(TITLE) + " (" + format_hhmmss(total_sec) + ")");
+			set_time_title(window);
 		}
 	}
 }
 
 // Форматирование времени
-std::string Game::format_hhmmss(int totalSec)
+std::string Game::format_hhmmss(int total_sec)
 {
-	if (totalSec < 0) totalSec = 0;
+	if (total_sec < 0) total_sec = 0;
 
-	int h = totalSec / 3600;
-	int m = (totalSec / 60) % 60;
-	int s = totalSec % 60;
+	int h = total_sec / 3600;
+	int m = (total_sec / 60) % 60;
+	int s = total_sec % 60;
 
 	std::ostringstream oss;
 	oss << std::setw(2) << std::setfill('0') << h << ':'
@@ -350,4 +378,28 @@ std::string Game::format_hhmmss(int totalSec)
 		<< std::setw(2) << std::setfill('0') << s;
 
 	return oss.str();
+}
+
+// Задание названия окна с временем в скобках
+void Game::set_time_title(sf::RenderWindow& window) {
+	window.setTitle(std::string(TITLE) + " (" + format_hhmmss(total_sec) + ")");
+}
+
+// Задание названия окна с текущим состоянием игры в скобках
+void Game::set_state_title(sf::RenderWindow& window) {
+	window.setTitle(std::string(TITLE) + " (" + get_state_as_str(state) + ")");
+}
+
+// Обработчик паузы
+void Game::handle_pause(sf::RenderWindow& window) {
+	if (state == State::Pause) {
+		state = prev_state;
+		prev_state = State::Pause;
+		if (timer_running) set_time_title(window);
+	}
+	else if ((state == State::Play || state == State::Move) && !is_shuffle) {
+		prev_state = state;
+		state = State::Pause;
+		set_state_title(window);
+	}
 }
