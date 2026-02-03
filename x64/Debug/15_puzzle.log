@@ -1,4 +1,10 @@
 ﻿  game.cpp
+  puzzle.cpp
+  main.cpp
+  random.cpp
+  textures.cpp
+  tile.cpp
+  Создание кода...
   15_puzzle.vcxproj -> C:\Users\fedot\source\repos\15_puzzle\x64\Debug\15_puzzle.exe
   "pwsh.exe" не является внутренней или внешней
   командой, исполняемой программой или пакетным файлом.

@@ -40,21 +40,21 @@ Game::Game()
 		State::Solved,
 		Puzzle(),
 		std::array<Tile, 15>{{
-			Tile(1, sf::Sprite(textures::get("play_tilemap"))),
-			Tile(2, sf::Sprite(textures::get("play_tilemap"))),
-			Tile(3, sf::Sprite(textures::get("play_tilemap"))),
-			Tile(4, sf::Sprite(textures::get("play_tilemap"))),
-			Tile(5, sf::Sprite(textures::get("play_tilemap"))),
-			Tile(6, sf::Sprite(textures::get("play_tilemap"))),
-			Tile(7, sf::Sprite(textures::get("play_tilemap"))),
-			Tile(8, sf::Sprite(textures::get("play_tilemap"))),
-			Tile(9, sf::Sprite(textures::get("play_tilemap"))),
-			Tile(10, sf::Sprite(textures::get("play_tilemap"))),
-			Tile(11, sf::Sprite(textures::get("play_tilemap"))),
-			Tile(12, sf::Sprite(textures::get("play_tilemap"))),
-			Tile(13, sf::Sprite(textures::get("play_tilemap"))),
-			Tile(14, sf::Sprite(textures::get("play_tilemap"))),
-			Tile(15, sf::Sprite(textures::get("play_tilemap")))
+			Tile(1, sf::Sprite(textures::get("default_skin"))),
+			Tile(2, sf::Sprite(textures::get("default_skin"))),
+			Tile(3, sf::Sprite(textures::get("default_skin"))),
+			Tile(4, sf::Sprite(textures::get("default_skin"))),
+			Tile(5, sf::Sprite(textures::get("default_skin"))),
+			Tile(6, sf::Sprite(textures::get("default_skin"))),
+			Tile(7, sf::Sprite(textures::get("default_skin"))),
+			Tile(8, sf::Sprite(textures::get("default_skin"))),
+			Tile(9, sf::Sprite(textures::get("default_skin"))),
+			Tile(10, sf::Sprite(textures::get("default_skin"))),
+			Tile(11, sf::Sprite(textures::get("default_skin"))),
+			Tile(12, sf::Sprite(textures::get("default_skin"))),
+			Tile(13, sf::Sprite(textures::get("default_skin"))),
+			Tile(14, sf::Sprite(textures::get("default_skin"))),
+			Tile(15, sf::Sprite(textures::get("default_skin")))
 		}},
 		0.f,
 		false
@@ -88,7 +88,7 @@ void Game::set_size(sf::RenderTarget& target) {
 // Задание тайлам нарезанных участков тайлмапа
 void Game::set_tile_rects() {
 	for (auto& tile : tiles) {
-		const auto& atlas = textures::get("play_tilemap");
+		const auto& atlas = textures::get("default_skin");
 		tile.sprite.setTextureRect(textures::tile_rect(atlas, tile.value, COLUMNS, ROWS));
 	}
 }

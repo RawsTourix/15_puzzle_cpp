@@ -6,16 +6,10 @@
 namespace assets {
 
     // Корневая папка
-    constexpr const char* root = "Sprites/";
+    constexpr const char* root = "Skins/";
 
-    // Спрайты игровых кнопок
-    constexpr const char* play_tilemap = "Sprites/play_buttons/tilemap.png";
-
-    // Спрайты кнопок меню
-    constexpr const char* menu_button_continue = "Sprites/menu_buttons/continue.png";
-    constexpr const char* menu_button_exit = "Sprites/menu_buttons/exit.png";
-    constexpr const char* menu_button_pause = "Sprites/menu_buttons/pause.png";
-    constexpr const char* menu_button_replay = "Sprites/menu_buttons/replay.png";
+    // Скин по умолчанию
+    constexpr const char* default_skin = "Skins/default_skin.png";
 
 }
 

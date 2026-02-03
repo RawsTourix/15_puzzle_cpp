@@ -23,11 +23,7 @@ namespace textures {
         };
 
         // Загрузка текстур
-        load("play_tilemap", assets::play_tilemap);
-        load("continue", assets::menu_button_continue);
-        load("exit", assets::menu_button_exit);
-        load("pause", assets::menu_button_pause);
-        load("replay", assets::menu_button_replay);
+        load("default_skin", assets::default_skin);
 
     }
 
