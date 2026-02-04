@@ -1,3 +1,6 @@
+// main.cpp
+// © Fedor Kondakov
+
 #include "textures.h"
 #include "game.h"
 #include <SFML/Graphics.hpp>
