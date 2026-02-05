@@ -28,6 +28,9 @@
     <Filter Include="Рандом">
       <UniqueIdentifier>{3b24984c-880c-4f07-9142-a4f3c1357fa6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Документация">
+      <UniqueIdentifier>{b02ac273-876a-4b9d-9eba-a95441c23565}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -65,5 +68,13 @@
     <ClInclude Include="random.h">
       <Filter>Рандом</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="README.md">
+      <Filter>Документация</Filter>
+    </None>
+    <None Include="BUILD.md">
+      <Filter>Документация</Filter>
+    </None>
   </ItemGroup>
 </Project>
